@@ -2,7 +2,6 @@
 package org.usfirst.frc.team4263.robot2016;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Jaguar;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
@@ -21,24 +20,23 @@ import edu.wpi.first.wpilibj.Joystick;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	boolean initalized = false;
     final String defaultAuto = "Default";
     final String customAuto = "My Auto";
     String autoSelected;
     SendableChooser chooser;
-    /* VictorSP leftDrive1;
-    VictorSP leftDrive2;
-    VictorSP rightDrive1;
-    VictorSP rightDrive2; */
 	RobotDrive drive;
 	Talon Loader1;
 	Talon Loader2;
 	Talon Shooter1;
 	Talon Shooter2;
-	Joystick xbox;
+	Joystick inputJoystick;
 	VictorSP left1;
 	VictorSP left2;
 	VictorSP right1;
 	VictorSP right2;
+    Compressor comp;
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -48,24 +46,45 @@ public class Robot extends IterativeRobot {
         chooser.addDefault("Default Auto", defaultAuto);
         chooser.addObject("My Auto", customAuto);
         SmartDashboard.putData("Auto choices", chooser);
-        /* leftDrive1 = new VictorSP(1);
-        leftDrive2 = new VictorSP(2);
-        rightDrive1 = new VictorSP(3);
-        rightDrive2 = new VictorSP(4); */
-        left1 = new VictorSP(0);
-        left2 = new VictorSP(1);
-        right1 = new VictorSP(2);
-        right2 = new VictorSP(3);
-        drive = new RobotDrive(left1, left2, right1, right2);
-        Loader1 = new Talon(5);
-        Loader2 = new Talon(6);
-        Shooter1 = new Talon(7);
-        Shooter2 = new Talon(8);
-        Compressor c = new Compressor(0);
-     //   drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
-     //   drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
-        xbox = new Joystick(0);
         
+        /*
+         * Drive motors
+         */
+        left1  = new VictorSP(0); // □  -- square
+        left2  = new VictorSP(1); // ○  -- circle
+        right1 = new VictorSP(2); // △   -- triangle
+        right2 = new VictorSP(3); // ☆  -- star
+        //RobotDrive takes:
+        //RobotDrive(frontLeft, rearLeft, frontRight, rearRight)
+        //For us, front and back have little meaning
+        drive = new RobotDrive(left1, left2, right1, right2);
+        
+        /*
+         * Ball loader
+         */
+        Loader1  = new Talon(5); // X -- cross
+        Loader2  = new Talon(6); // Arrow
+        /*
+         * Ball shooter
+         */
+        Shooter1 = new Talon(7); // Pentagon
+        Shooter2 = new Talon(8); // Crescent
+        
+        //comp = new Compressor(0);
+        
+        /*
+         * The joysticks are indexed by the USB port they're plugged into
+         * file:///C:/Users/robotics/wpilib/java/current/javadoc/edu/wpi/first/wpilibj/Joystick.html
+         * Use the driver station to figure out which index to use below.
+         */
+        inputJoystick = new Joystick(1);
+        
+        initalized = true;
+    }
+    public void teleopInit(){
+    	if(!initalized){
+    		this.robotInit();
+    	}
     }
     
 	/**
@@ -102,31 +121,16 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	// trigger =1
-    	// single on top  =2
-    	// middle of three = 3
-    	// left of three = 4
-    	// right of three = 5
-    	// left front = 6
-    	// left rear = 7
-    	// rear left = 8
-    	// rear right = 9
-    	// right rear = 10
-    	// right front = 11
-    	// xbox = new Joystick(1);
-    	System.out.println("hi there");
-    	xbox = new Joystick(0);
-    	if (xbox != null) {
-    		System.out.println(xbox.toString());	
-    	}
-    	if (xbox == null) {
-    		System.out.println("xbox is null!");
-    	}
-    	if(xbox.getRawButton(1)){
+    	/*
+    	 * See robotInit above for a to learn 
+    	 * the pin mapping for each of these
+    	 * objects
+    	 */
+    	if(inputJoystick.getRawButton(1)){
     		Shooter1.set(1);
     		Shooter2.set(-1);
     	}
-    	else if(xbox.getRawButton(3)){
+    	else if(inputJoystick.getRawButton(3)){
     		Shooter1.set(-1);
     		Shooter2.set(1);
     	}
@@ -134,11 +138,11 @@ public class Robot extends IterativeRobot {
     		Shooter1.set(0);
     		Shooter2.set(0);
     	}
-    	if(xbox.getRawButton(2)){
+    	if(inputJoystick.getRawButton(2)){
     		Loader1.set(-1);
     		Loader2.set(1);
     	}
-    	else if(xbox.getRawButton(4)){
+    	else if(inputJoystick.getRawButton(4)){
     		Loader1.set(1);
     		Loader2.set(-1);
     	}
@@ -146,7 +150,7 @@ public class Robot extends IterativeRobot {
     		Loader1.set(0);
     		Loader2.set(0);
     	}
-    	drive.arcadeDrive(xbox);
+    	drive.arcadeDrive(inputJoystick);
     	Timer.delay(0.01);
         
     }
