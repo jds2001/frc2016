@@ -3,6 +3,7 @@ package org.usfirst.frc.team4263.robot2016;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.CameraServer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,8 +28,7 @@ public class Robot extends IterativeRobot {
     String autoSelected;
     SendableChooser chooser;
 	RobotDrive drive;
-	Talon Loader1;
-	Talon Loader2;
+	Talon Loader;
 	Talon Shooter1;
 	Talon Shooter2;
 	Joystick inputJoystick;
@@ -35,7 +36,15 @@ public class Robot extends IterativeRobot {
 	VictorSP left2;
 	VictorSP right1;
 	VictorSP right2;
+	Servo    triggerServo;
     Compressor comp;
+    CameraServer frontcam;
+    enum tstate {
+    	Open,
+    	Holding,
+    	Firing
+    };
+    tstate triggerState = tstate.Holding;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -47,6 +56,9 @@ public class Robot extends IterativeRobot {
         chooser.addObject("My Auto", customAuto);
         SmartDashboard.putData("Auto choices", chooser);
         
+        CameraServer.getInstance().setQuality(50);
+        CameraServer.getInstance().startAutomaticCapture();
+;        
         /*
          * Drive motors
          */
@@ -54,6 +66,10 @@ public class Robot extends IterativeRobot {
         left2  = new VictorSP(1); // ○  -- circle
         right1 = new VictorSP(2); // △   -- triangle
         right2 = new VictorSP(3); // ☆  -- star
+        left1.setInverted(true);
+        left2.setInverted(true);
+        right1.setInverted(true);
+        right2.setInverted(true);
         //RobotDrive takes:
         //RobotDrive(frontLeft, rearLeft, frontRight, rearRight)
         //For us, front and back have little meaning
@@ -62,13 +78,14 @@ public class Robot extends IterativeRobot {
         /*
          * Ball loader
          */
-        Loader1  = new Talon(5); // X -- cross
-        Loader2  = new Talon(6); // Arrow
+        Loader  = new Talon(5); // half circle
         /*
          * Ball shooter
          */
         Shooter1 = new Talon(7); // Pentagon
         Shooter2 = new Talon(8); // Crescent
+        triggerServo  = new Servo(9);
+        
         
         //comp = new Compressor(0);
         
@@ -85,6 +102,15 @@ public class Robot extends IterativeRobot {
     	if(!initalized){
     		this.robotInit();
     	}
+    }
+    public void disabledInit(){
+    	if(initalized){
+    		drive.stopMotor();
+    		Loader.stopMotor();
+    		Shooter1.stopMotor();
+    		Shooter2.stopMotor();
+    		triggerServo.set(0);
+    	}	
     }
     
 	/**
@@ -116,6 +142,49 @@ public class Robot extends IterativeRobot {
             break;
     	}
     }
+    private void handleTrigger(){
+    	boolean updateTrigger = false;
+    	if(inputJoystick.getTrigger()){
+    		if(triggerState == tstate.Holding){
+    			System.out.println("Firing");
+    			triggerState = tstate.Firing;
+    			updateTrigger = true;
+    		}
+    	}
+    	if(inputJoystick.getRawButton(6)){
+    		if(triggerState != tstate.Open){
+    			System.out.println("Opening");
+    			triggerState = tstate.Open;
+    			updateTrigger = true;
+    		}
+    	}
+    	if(inputJoystick.getRawButton(7)){
+    		if(triggerState != tstate.Holding){
+    			System.out.println("Holding");
+    			triggerState = tstate.Holding;
+    			updateTrigger = true;
+    		}
+    	}
+    	if(updateTrigger){
+    		switch(triggerState){
+    		case Firing:
+    			triggerServo.set(0);
+    			break;
+    		case Holding:
+    			triggerServo.set(.03);
+    			break;
+    		case Open:
+    			triggerServo.set(.065);
+    			break;
+    		}
+    	}
+    }
+    public void buttonList(){
+    	for(int i = 1; i < inputJoystick.getButtonCount(); ++i){
+    		System.out.println(i + " " + (inputJoystick.getRawButton(i)?"Pressed":"Not Pressed"));
+    	}
+    	Timer.delay(0.5);
+    }
 
     /**
      * This function is called periodically during operator control
@@ -126,7 +195,8 @@ public class Robot extends IterativeRobot {
     	 * the pin mapping for each of these
     	 * objects
     	 */
-    	if(inputJoystick.getRawButton(1)){
+    	handleTrigger();
+    	if(inputJoystick.getRawButton(2)){
     		Shooter1.set(1);
     		Shooter2.set(-1);
     	}
@@ -139,16 +209,16 @@ public class Robot extends IterativeRobot {
     		Shooter2.set(0);
     	}
     	if(inputJoystick.getRawButton(2)){
-    		Loader1.set(-1);
-    		Loader2.set(1);
+    		Loader.set(-1);
     	}
     	else if(inputJoystick.getRawButton(4)){
-    		Loader1.set(1);
-    		Loader2.set(-1);
+    		Loader.set(1);
+    	}
+    	else if(inputJoystick.getRawButton(5)){
+    		Loader.set(-1);
     	}
     	else{
-    		Loader1.set(0);
-    		Loader2.set(0);
+    		Loader.set(0);
     	}
     	drive.arcadeDrive(inputJoystick);
     	Timer.delay(0.01);
