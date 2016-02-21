@@ -144,6 +144,22 @@ public class Robot extends IterativeRobot {
     }
     private void handleTrigger(){
     	boolean updateTrigger = false;
+	/*
+	 * The trigger is a state machine with three states:
+	 * 	Firing:
+	 * 		The Servo is pushed fully inside the robot, if there is a ball in the robot,
+	 * 		it pressing it into the shooter wheels.
+         *	Holding:
+	 *		The Servo is forming a gate, blockig the ball from rolling out of the front of
+	 *		the robot, but not pressing it into the shooter wheels
+	 *	Open:
+	 *		The Servo is open as wide as possible, ready to take in a ball.
+	 *
+	 *	Firing can only be transitioned to from holding. All other transitions can happen from
+	 *	any other state.
+	 *
+	 *	The trigger transitions to the firing state, button 6 transitons to open, and button 7 transitions to holding
+	 */
     	if(inputJoystick.getTrigger()){
     		if(triggerState == tstate.Holding){
     			System.out.println("Firing");
@@ -166,20 +182,27 @@ public class Robot extends IterativeRobot {
     		}
     	}
     	if(updateTrigger){
+		/*
+		 * Servo objects can be set to a range between 0.0 and 1.0
+		 * however, the range of our servo is between 0 and 0.065
+		 */
     		switch(triggerState){
-    		case Firing:
-    			triggerServo.set(0);
-    			break;
-    		case Holding:
-    			triggerServo.set(.03);
-    			break;
-    		case Open:
-    			triggerServo.set(.065);
-    			break;
+			case Firing:
+				triggerServo.set(0);
+				break;
+			case Holding:
+				triggerServo.set(.03);
+				break;
+			case Open:
+				triggerServo.set(.065);
+				break;
     		}
     	}
     }
     public void buttonList(){
+	/*
+	 * Helper function to figure out what the button mapping was on the joystick
+	 */
     	for(int i = 1; i < inputJoystick.getButtonCount(); ++i){
     		System.out.println(i + " " + (inputJoystick.getRawButton(i)?"Pressed":"Not Pressed"));
     	}
@@ -195,12 +218,15 @@ public class Robot extends IterativeRobot {
     	 * the pin mapping for each of these
     	 * objects
     	 */
+
     	handleTrigger();
+
     	if(inputJoystick.getRawButton(2)){
     		Shooter1.set(1);
     		Shooter2.set(-1);
     	}
     	else if(inputJoystick.getRawButton(3)){
+		//Spin up the shooter
     		Shooter1.set(-1);
     		Shooter2.set(1);
     	}
