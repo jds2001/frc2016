@@ -262,7 +262,7 @@ public class Robot extends IterativeRobot {
     	else {
     		solenoid1.set(DoubleSolenoid.Value.kOff);
     	}
-    	drive.tankDrive(joystick1, joystick2);
+    	drive.arcadeDrive(joystick1);
     	Timer.delay(0.01);
         
     }
