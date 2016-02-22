@@ -226,7 +226,6 @@ public class Robot extends IterativeRobot {
     	 * objects
     	 */
     	comp.setClosedLoopControl(true);
-    	System.out.println("enabled" + comp.enabled());
     	handleTrigger();
 
     	if(joystick1.getRawButton(2)){
