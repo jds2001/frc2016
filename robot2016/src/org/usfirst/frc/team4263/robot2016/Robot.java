@@ -32,7 +32,7 @@ public class Robot extends IterativeRobot {
 	Talon Loader;
 	Talon Shooter1;
 	Talon Shooter2;
-	Joystick inputJoystick;
+	Joystick joystick1;
 	VictorSP left1;
 	VictorSP left2;
 	VictorSP right1;
@@ -98,7 +98,7 @@ public class Robot extends IterativeRobot {
          * file:///C:/Users/robotics/wpilib/java/current/javadoc/edu/wpi/first/wpilibj/Joystick.html
          * Use the driver station to figure out which index to use below.
          */
-        inputJoystick = new Joystick(1);
+        joystick1 = new Joystick(1);
         
         initalized = true;
     }
@@ -164,21 +164,21 @@ public class Robot extends IterativeRobot {
 	 *
 	 *	The trigger transitions to the firing state, button 6 transitons to open, and button 7 transitions to holding
 	 */
-    	if(inputJoystick.getTrigger()){
+    	if(joystick1.getTrigger()){
     		if(triggerState == tstate.Holding){
     			System.out.println("Firing");
     			triggerState = tstate.Firing;
     			updateTrigger = true;
     		}
     	}
-    	if(inputJoystick.getRawButton(6)){
+    	if(joystick1.getRawButton(6)){
     		if(triggerState != tstate.Open){
     			System.out.println("Opening");
     			triggerState = tstate.Open;
     			updateTrigger = true;
     		}
     	}
-    	if(inputJoystick.getRawButton(7)){
+    	if(joystick1.getRawButton(7)){
     		if(triggerState != tstate.Holding){
     			System.out.println("Holding");
     			triggerState = tstate.Holding;
@@ -207,8 +207,8 @@ public class Robot extends IterativeRobot {
 	/*
 	 * Helper function to figure out what the button mapping was on the joystick
 	 */
-    	for(int i = 1; i < inputJoystick.getButtonCount(); ++i){
-    		System.out.println(i + " " + (inputJoystick.getRawButton(i)?"Pressed":"Not Pressed"));
+    	for(int i = 1; i < joystick1.getButtonCount(); ++i){
+    		System.out.println(i + " " + (joystick1.getRawButton(i)?"Pressed":"Not Pressed"));
     	}
     	Timer.delay(0.5);
     }
@@ -225,11 +225,11 @@ public class Robot extends IterativeRobot {
     	comp.setClosedLoopControl(true);
     	handleTrigger();
 
-    	if(inputJoystick.getRawButton(2)){
+    	if(joystick1.getRawButton(2)){
     		Shooter1.set(1);
     		Shooter2.set(-1);
     	}
-    	else if(inputJoystick.getRawButton(3)){
+    	else if(joystick1.getRawButton(3)){
 		//Spin up the shooter
     		Shooter1.set(-1);
     		Shooter2.set(1);
@@ -238,19 +238,19 @@ public class Robot extends IterativeRobot {
     		Shooter1.set(0);
     		Shooter2.set(0);
     	}
-    	if(inputJoystick.getRawButton(2)){
+    	if(joystick1.getRawButton(2)){
     		Loader.set(-1);
     	}
-    	else if(inputJoystick.getRawButton(4)){
+    	else if(joystick1.getRawButton(4)){
     		Loader.set(1);
     	}
-    	else if(inputJoystick.getRawButton(5)){
+    	else if(joystick1.getRawButton(5)){
     		Loader.set(-1);
     	}
     	else{
     		Loader.set(0);
     	}
-    	drive.arcadeDrive(inputJoystick);
+    	drive.arcadeDrive(joystick1);
     	Timer.delay(0.01);
         
     }
