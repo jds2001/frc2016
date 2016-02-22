@@ -35,6 +35,7 @@ public class Robot extends IterativeRobot {
 	Talon Shooter2;
 	Joystick joystick1;
 	Joystick joystick2;
+	Joystick joystick3;
 	VictorSP left1;
 	VictorSP left2;
 	VictorSP right1;
@@ -102,6 +103,7 @@ public class Robot extends IterativeRobot {
          */
         joystick1 = new Joystick(0);
         joystick2 = new Joystick(1);
+        joystick3 = new Joystick(2);
         
         initalized = true;
     }
@@ -167,21 +169,21 @@ public class Robot extends IterativeRobot {
 	 *
 	 *	The trigger transitions to the firing state, button 6 transitons to open, and button 7 transitions to holding
 	 */
-    	if(joystick1.getTrigger()){
+    	if(joystick1.getTrigger() || joystick3.getTrigger()){
     		if(triggerState == tstate.Holding){
     			System.out.println("Firing");
     			triggerState = tstate.Firing;
     			updateTrigger = true;
     		}
     	}
-    	if(joystick1.getRawButton(6)){
+    	if(joystick1.getRawButton(6) || joystick3.getRawButton(6)){
     		if(triggerState != tstate.Open){
     			System.out.println("Opening");
     			triggerState = tstate.Open;
     			updateTrigger = true;
     		}
     	}
-    	if(joystick1.getRawButton(7)){
+    	if(joystick1.getRawButton(7) || joystick3.getRawButton(7)){
     		if(triggerState != tstate.Holding){
     			System.out.println("Holding");
     			triggerState = tstate.Holding;
@@ -228,11 +230,11 @@ public class Robot extends IterativeRobot {
     	comp.setClosedLoopControl(true);
     	handleTrigger();
 
-    	if(joystick1.getRawButton(2)){
+    	if(joystick1.getRawButton(2) || joystick3.getRawButton(2)){
     		Shooter1.set(1);
     		Shooter2.set(-1);
     	}
-    	else if(joystick1.getRawButton(3)){
+    	else if(joystick1.getRawButton(3) || joystick3.getRawButton(3)){
 		//Spin up the shooter
     		Shooter1.set(-1);
     		Shooter2.set(1);
@@ -241,28 +243,28 @@ public class Robot extends IterativeRobot {
     		Shooter1.set(0);
     		Shooter2.set(0);
     	}
-    	if(joystick1.getRawButton(2)){
+    	if(joystick1.getRawButton(2) || joystick3.getRawButton(2)){
     		Loader.set(-1);
     	}
-    	else if(joystick1.getRawButton(4)){
+    	else if(joystick1.getRawButton(4) || joystick3.getRawButton(4)){
     		Loader.set(1);
     	}
-    	else if(joystick1.getRawButton(5)){
+    	else if(joystick1.getRawButton(5)|| joystick3.getRawButton(5)){
     		Loader.set(-1);
     	}
     	else{
     		Loader.set(0);
     	}
-    	if(joystick1.getRawButton(6)) {
+    	if(joystick1.getRawButton(11) || joystick3.getRawButton(11)) {
     		solenoid1.set(DoubleSolenoid.Value.kReverse);
     	}
-    	else if (joystick1.getRawButton(7)) {
+    	else if (joystick1.getRawButton(10) || joystick3.getRawButton(10)) {
     		solenoid1.set(DoubleSolenoid.Value.kForward);
     	}
     	else {
     		solenoid1.set(DoubleSolenoid.Value.kOff);
     	}
-    	drive.arcadeDrive(joystick1);
+    	drive.tankDrive(joystick1, joystick2);
     	Timer.delay(0.01);
         
     }
