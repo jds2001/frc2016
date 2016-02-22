@@ -254,10 +254,10 @@ public class Robot extends IterativeRobot {
     		Loader.set(0);
     	}
     	if(joystick1.getRawButton(6)) {
-    		solenoid1.set(DoubleSolenoid.Value.kForward);
+    		solenoid1.set(DoubleSolenoid.Value.kReverse);
     	}
     	else if (joystick1.getRawButton(7)) {
-    		solenoid1.set(DoubleSolenoid.Value.kReverse);
+    		solenoid1.set(DoubleSolenoid.Value.kForward);
     	}
     	else {
     		solenoid1.set(DoubleSolenoid.Value.kOff);
