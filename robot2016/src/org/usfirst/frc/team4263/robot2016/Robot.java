@@ -99,8 +99,8 @@ public class Robot extends IterativeRobot {
          * file:///C:/Users/robotics/wpilib/java/current/javadoc/edu/wpi/first/wpilibj/Joystick.html
          * Use the driver station to figure out which index to use below.
          */
-        joystick1 = new Joystick(1);
-        joystick2 = new Joystick(2);
+        joystick1 = new Joystick(0);
+        joystick2 = new Joystick(1);
         
         initalized = true;
     }
