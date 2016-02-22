@@ -33,6 +33,7 @@ public class Robot extends IterativeRobot {
 	Talon Shooter1;
 	Talon Shooter2;
 	Joystick joystick1;
+	Joystick joystick2;
 	VictorSP left1;
 	VictorSP left2;
 	VictorSP right1;
@@ -99,6 +100,7 @@ public class Robot extends IterativeRobot {
          * Use the driver station to figure out which index to use below.
          */
         joystick1 = new Joystick(1);
+        joystick2 = new Joystick(2);
         
         initalized = true;
     }
@@ -250,7 +252,7 @@ public class Robot extends IterativeRobot {
     	else{
     		Loader.set(0);
     	}
-    	drive.arcadeDrive(joystick1);
+    	drive.tankDrive(joystick1, joystick2);
     	Timer.delay(0.01);
         
     }
