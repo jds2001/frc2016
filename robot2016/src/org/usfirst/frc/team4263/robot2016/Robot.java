@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
@@ -40,8 +41,8 @@ public class Robot extends IterativeRobot {
 	VictorSP right2;
 	Servo    triggerServo;
     Compressor comp;
-    Solenoid solenoid1;
-    Solenoid solenoid2;
+    DoubleSolenoid solenoid1;
+    // Solenoid solenoid2;
     CameraServer frontcam;
     enum tstate {
     	Open,
@@ -92,8 +93,8 @@ public class Robot extends IterativeRobot {
         
         
         comp = new Compressor(0);
-        solenoid1 = new Solenoid(0);
-        solenoid2 = new Solenoid(1);
+        solenoid1 = new DoubleSolenoid(0, 1);
+        // solenoid2 = new Solenoid(1);
         /*
          * The joysticks are indexed by the USB port they're plugged into
          * file:///C:/Users/robotics/wpilib/java/current/javadoc/edu/wpi/first/wpilibj/Joystick.html
@@ -225,6 +226,7 @@ public class Robot extends IterativeRobot {
     	 * objects
     	 */
     	comp.setClosedLoopControl(true);
+    	System.out.println("enabled" + comp.enabled());
     	handleTrigger();
 
     	if(joystick1.getRawButton(2)){
@@ -251,6 +253,15 @@ public class Robot extends IterativeRobot {
     	}
     	else{
     		Loader.set(0);
+    	}
+    	if(joystick1.getRawButton(6)) {
+    		solenoid1.set(DoubleSolenoid.Value.kForward);
+    	}
+    	else if (joystick1.getRawButton(7)) {
+    		solenoid1.set(DoubleSolenoid.Value.kReverse);
+    	}
+    	else {
+    		solenoid1.set(DoubleSolenoid.Value.kOff);
     	}
     	drive.tankDrive(joystick1, joystick2);
     	Timer.delay(0.01);
