@@ -4,6 +4,7 @@ package org.usfirst.frc.team4263.robot2016;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.VictorSP;
@@ -38,6 +39,8 @@ public class Robot extends IterativeRobot {
 	VictorSP right2;
 	Servo    triggerServo;
     Compressor comp;
+    Solenoid solenoid1;
+    Solenoid solenoid2;
     CameraServer frontcam;
     enum tstate {
     	Open,
@@ -87,8 +90,9 @@ public class Robot extends IterativeRobot {
         triggerServo  = new Servo(9);
         
         
-        //comp = new Compressor(0);
-        
+        comp = new Compressor(0);
+        solenoid1 = new Solenoid(0);
+        solenoid2 = new Solenoid(1);
         /*
          * The joysticks are indexed by the USB port they're plugged into
          * file:///C:/Users/robotics/wpilib/java/current/javadoc/edu/wpi/first/wpilibj/Joystick.html
@@ -218,7 +222,7 @@ public class Robot extends IterativeRobot {
     	 * the pin mapping for each of these
     	 * objects
     	 */
-
+    	comp.setClosedLoopControl(true);
     	handleTrigger();
 
     	if(inputJoystick.getRawButton(2)){
